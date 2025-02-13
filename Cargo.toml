@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["jp-postal-code-core"]
+members = ["jp-postal-code-core", "jp-postal-code-util"]
 
 [workspace.package]
 authors = ["At mark, Inc."]
@@ -15,3 +15,4 @@ thiserror = "2"
 tokio = "1"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+jp-postal-code-core = { path = "./jp-postal-code-core" }
