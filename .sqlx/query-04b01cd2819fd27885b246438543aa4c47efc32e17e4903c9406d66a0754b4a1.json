@@ -1,0 +1,100 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                local_government_code,\n                old_postal_code,\n                postal_code,\n                prefecture_kana,\n                city_kana,\n                town_kana,\n                prefecture,\n                city,\n                town,\n                has_multi_postal_code,\n                has_chome,\n                has_multi_town,\n                update_code,\n                update_reason\n            FROM utf_ken_all\n            WHERE postal_code LIKE $1\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "local_government_code",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 1,
+        "name": "old_postal_code",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "postal_code",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 3,
+        "name": "prefecture_kana",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 4,
+        "name": "city_kana",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 5,
+        "name": "town_kana",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 6,
+        "name": "prefecture",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 7,
+        "name": "city",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 8,
+        "name": "town",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 9,
+        "name": "has_multi_postal_code",
+        "type_info": "Int2"
+      },
+      {
+        "ordinal": 10,
+        "name": "has_chome",
+        "type_info": "Int2"
+      },
+      {
+        "ordinal": 11,
+        "name": "has_multi_town",
+        "type_info": "Int2"
+      },
+      {
+        "ordinal": 12,
+        "name": "update_code",
+        "type_info": "Int2"
+      },
+      {
+        "ordinal": 13,
+        "name": "update_reason",
+        "type_info": "Int2"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "04b01cd2819fd27885b246438543aa4c47efc32e17e4903c9406d66a0754b4a1"
+}

@@ -1,0 +1,12 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "DELETE FROM utf_ken_all",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": []
+  },
+  "hash": "afe498a558e11ed8eccc8d56078a943ec07bdd65aad14b4a144ba5d0a3a83d83"
+}
