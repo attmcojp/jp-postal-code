@@ -11,6 +11,7 @@ services:
 
   jp-postal-code:
     restart: unless-stopped
+    image: ghcr.io/attmcojp/jp-postal-code
     build:
       context: "."
     environment:
