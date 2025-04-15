@@ -1,6 +1,6 @@
 FROM rust:1-alpine AS build-stage
 
-RUN apk --no-cache add musl-dev
+RUN apk --no-cache add musl-dev mold
 
 WORKDIR /app
 COPY . .
