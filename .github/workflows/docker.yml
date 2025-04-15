@@ -17,7 +17,6 @@ jobs:
   docker-build:
     runs-on: "ubuntu-latest"
     permissions:
-      attestations: write
       contents: read
       id-token: write
       packages: write
@@ -42,9 +41,4 @@ jobs:
           cache-to: type=gha,mode=max
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-      - uses: actions/attest-build-provenance@v2
-        with:
-          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          subject-digest: ${{ steps.push.outputs.digest }}
-          push-to-registry: true
     timeout-minutes: 15
