@@ -14,7 +14,7 @@ RUN --mount=type=cache,target=/tmp/cargo-target/ \
 
 #---
 FROM alpine
-LABEL org.opencontainers.image.source https://github.com/attmcojp/jp-postal-code
+LABEL org.opencontainers.image.source=https://github.com/attmcojp/jp-postal-code
 
 COPY --from=build-stage /bin/server /bin/
 
