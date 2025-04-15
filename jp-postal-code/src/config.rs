@@ -8,7 +8,7 @@ pub struct Config {
 }
 
 fn default_http_server_addr() -> String {
-    "0.0.0.0:8000".to_string()
+    "localhost:8000".to_string()
 }
 
 impl Default for Config {
