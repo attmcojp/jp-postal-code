@@ -1,4 +1,4 @@
-name: "Release"
+name: "Docker"
 
 env:
   COMPOSE_BAKE: "true"
@@ -7,8 +7,11 @@ env:
 
 on:
   push:
+    branches:
+      - "main"
     tags:
       - "v*"
+  workflow_dispatch:
 
 jobs:
   docker-build:
@@ -31,6 +34,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
       - uses: docker/build-push-action@v6
+        id: push
         with:
           context: .
           push: true
