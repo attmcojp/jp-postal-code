@@ -14,6 +14,11 @@ services:
     image: ghcr.io/attmcojp/jp-postal-code
     build:
       context: "."
+      platforms:
+        # GitHub Actions でビルドしたイメージと合せるために linux/amd64 を指定
+        # プライベートリポジトリでも ARM64 系ランナーがサポートされた後に GitHub Actions 側を
+        # ARM64 系ランナーに変更したうえで、下記制限を linux/arm64 に変更すること
+        - linux/amd64
     environment:
       DATABASE_URL: "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres/${POSTGRES_DB}"
     ports:
