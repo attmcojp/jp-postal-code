@@ -1,0 +1,53 @@
+name: "Build"
+
+env:
+  COMPOSE_BAKE: "true"
+
+on:
+  push:
+    branches:
+      - "main"
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+      - run: rustup component add clippy rustfmt
+      - run: cargo check --all-features --all-targets
+      - run: cargo clippy --all-features --all-targets
+      - run: cargo fmt --check
+    timeout-minutes: 5
+
+  build:
+    needs: ["check"]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+      - run: cargo build --locked --release
+    timeout-minutes: 15
+
+  docker-build:
+    if: github.ref == 'refs/heads/main'
+    needs: ["check"]
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          tags: attmcojp/jp-postal-code:latest
+          push: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+    timeout-minutes: 15
