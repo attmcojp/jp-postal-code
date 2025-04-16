@@ -8,5 +8,7 @@ macro_rules! define {
 }
 #[macro_use]
 mod town;
+mod town_kana;
 
 pub use town::normalize_utf_ken_all_record_town;
+pub use town_kana::normalize_utf_ken_all_record_town_kana;

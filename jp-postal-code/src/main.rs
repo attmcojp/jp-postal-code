@@ -77,8 +77,11 @@ struct AppState {
 struct PostalAddress {
     postal_code: String,
     prefecture: String,
+    prefecture_kana: String,
     city: String,
+    city_kana: String,
     town: String,
+    town_kana: String,
 }
 
 #[derive(serde::Deserialize)]
@@ -115,8 +118,11 @@ async fn search(
         .map(|r| PostalAddress {
             postal_code: r.postal_code,
             prefecture: r.prefecture,
+            prefecture_kana: r.prefecture_kana,
             city: r.city,
+            city_kana: r.city_kana,
             town: r.town,
+            town_kana: r.town_kana,
         })
         .collect::<Vec<_>>();
     Ok((

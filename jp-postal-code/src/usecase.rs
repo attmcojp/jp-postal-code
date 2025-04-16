@@ -1,6 +1,8 @@
 use crate::repo::{UtfKenAllRepository, UtfKenAllRepositorySearchRequest};
 use jp_postal_code_core::model::UtfKenAllRecord;
-use jp_postal_code_core::normalize::normalize_utf_ken_all_record_town;
+use jp_postal_code_core::normalize::{
+    normalize_utf_ken_all_record_town, normalize_utf_ken_all_record_town_kana,
+};
 use jp_postal_code_util::{download, parse_utf_ken_all_zip, UTF_KEN_ALL_URL};
 
 /// 郵便番号データベースを更新する
@@ -32,9 +34,15 @@ where
         .into_iter()
         .flat_map(|r| {
             let towns = normalize_utf_ken_all_record_town(&r);
+            let town_kanas = normalize_utf_ken_all_record_town_kana(&r);
             towns
                 .into_iter()
-                .map(|town| UtfKenAllRecord { town, ..r.clone() })
+                .zip(town_kanas.into_iter())
+                .map(|(town, town_kana)| UtfKenAllRecord {
+                    town,
+                    town_kana,
+                    ..r.clone()
+                })
                 .collect::<Vec<_>>()
         })
         .collect::<Vec<_>>();
