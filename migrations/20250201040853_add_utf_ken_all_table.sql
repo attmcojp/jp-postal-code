@@ -1,5 +1,7 @@
 drop table if exists utf_ken_all cascade;
 create table utf_ken_all (
+  -- レコードのID
+  utf_ken_all_id bigint generated always as identity primary key,
   -- 全国地方公共団体コード（JIS X0401、X0402）
   local_government_code varchar(5) not null,
   -- （旧）郵便番号（5桁）
@@ -36,8 +38,5 @@ create table utf_ken_all (
   -- 6: 廃止（廃止データのみ使用）
   update_reason smallint not null,
   -- レコードの更新日時
-  updated_at timestamp with time zone not null,
-  -- 複合プライマリーキーを利用
-  -- 兵庫県明石市和坂が仮名の違いで2レコードあるため、プライマリーキーに town_kana を含めている
-  primary key (postal_code, prefecture, city, town, town_kana)
+  updated_at timestamp with time zone not null
 );
