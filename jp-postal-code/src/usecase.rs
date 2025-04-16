@@ -28,7 +28,16 @@ where
     );
     download(utf_ken_all_zip_url, &mut tempfile).await?;
     tracing::info!(?tempfile, "Parse utf_ken_all.zip to records");
-    let records = parse_utf_ken_all_zip(tempfile)?;
+    let records = parse_utf_ken_all_zip(tempfile)?
+        .into_iter()
+        .flat_map(|r| {
+            let towns = normalize_utf_ken_all_record_town(&r);
+            towns
+                .into_iter()
+                .map(|town| UtfKenAllRecord { town, ..r.clone() })
+                .collect::<Vec<_>>()
+        })
+        .collect::<Vec<_>>();
     tracing::info!(
         record_count = records.len(),
         "Replace database with the new records"
@@ -48,16 +57,6 @@ where
 {
     let postal_code = postal_code.as_ref();
     let records = repo.search(postal_code).await?;
-    let records = records
-        .into_iter()
-        .flat_map(|r| {
-            let towns = normalize_utf_ken_all_record_town(&r);
-            towns
-                .into_iter()
-                .map(|town| UtfKenAllRecord { town, ..r.clone() })
-                .collect::<Vec<_>>()
-        })
-        .collect();
     Ok(records)
 }
 
