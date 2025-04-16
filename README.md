@@ -38,22 +38,31 @@ Date: Wed, 16 Apr 2025 04:48:34 GMT
 {
     "addresses": [
         {
-            "postalCode": "0120042",
+            "postalCode": "0120013",
             "prefecture": "秋田県",
+            "prefectureKana": "アキタケン",
             "city": "湯沢市",
-            "town": "小豆田"
+            "cityKana": "ユザワシ",
+            "town": "栄田",
+            "townKana": "サカエダ"
         },
         {
-            "postalCode": "0120852",
+            "postalCode": "0120035",
             "prefecture": "秋田県",
+            "prefectureKana": "アキタケン",
             "city": "湯沢市",
-            "town": "荒町"
+            "cityKana": "ユザワシ",
+            "town": "幸町",
+            "townKana": "サイワイチョウ"
         },
         {
-            "postalCode": "0120062",
+            "postalCode": "0120811",
             "prefecture": "秋田県",
+            "prefectureKana": "アキタケン",
             "city": "湯沢市",
-            "town": "石塚"
+            "cityKana": "ユザワシ",
+            "town": "桜通り",
+            "townKana": "サクラドオリ"
         }
     ],
     "nextPageToken": "eyJ1dGZfa2VuX2FsbF9pZCI6MTg0NTV9"
