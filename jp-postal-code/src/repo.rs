@@ -15,4 +15,7 @@ pub trait UtfKenAllRepository: Clone + Send + Sync {
         &self,
         postal_code: &str,
     ) -> impl std::future::Future<Output = Result<Vec<UtfKenAllRecord>, Self::Error>> + Send;
+
+    /// 郵便番号データベースの総数をカウントする
+    fn count(&self) -> impl std::future::Future<Output = Result<usize, Self::Error>> + Send;
 }

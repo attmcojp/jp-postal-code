@@ -3,7 +3,7 @@ use axum::{
     routing::{get, post},
     Json, Router,
 };
-use jp_postal_code::{config, infra, usecase, MIGRATOR};
+use jp_postal_code::{config, infra, repo::UtfKenAllRepository as _, usecase, MIGRATOR};
 use tracing_subscriber::prelude::*;
 
 #[tokio::main]
@@ -30,9 +30,15 @@ async fn main_internal() -> Result<(), anyhow::Error> {
     let pool = sqlx::PgPool::connect(conf.database_url.as_ref()).await?;
     MIGRATOR.run(&pool).await?;
 
-    let state = AppState {
-        repo: infra::postgres::UtfKenAllRepositoryPostgres::new(pool),
-    };
+    let mut repo = infra::postgres::UtfKenAllRepositoryPostgres::new(pool);
+
+    // 郵便番号データベースが空ならば初回ダウンロードを行う
+    if repo.count().await? == 0 {
+        tracing::info!("Postal address database is empty. Initializing...");
+        usecase::update_postal_code_database(&mut repo, None::<String>).await?;
+    }
+
+    let state = AppState { repo };
     let app = Router::new()
         .route("/api/search", get(search))
         .route("/api/update", post(update))
