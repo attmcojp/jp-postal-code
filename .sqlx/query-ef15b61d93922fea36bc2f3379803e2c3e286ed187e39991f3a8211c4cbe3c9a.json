@@ -1,0 +1,12 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "TRUNCATE TABLE utf_ken_all RESTART IDENTITY",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": []
+  },
+  "hash": "ef15b61d93922fea36bc2f3379803e2c3e286ed187e39991f3a8211c4cbe3c9a"
+}

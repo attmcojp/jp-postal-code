@@ -1,82 +1,89 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT\n                local_government_code,\n                old_postal_code,\n                postal_code,\n                prefecture_kana,\n                city_kana,\n                town_kana,\n                prefecture,\n                city,\n                town,\n                has_multi_postal_code,\n                has_chome,\n                has_multi_town,\n                update_code,\n                update_reason\n            FROM utf_ken_all\n            WHERE postal_code LIKE $1\n            ",
+  "query": "\n                SELECT\n                    utf_ken_all_id,\n                    local_government_code,\n                    old_postal_code,\n                    postal_code,\n                    prefecture_kana,\n                    city_kana,\n                    town_kana,\n                    prefecture,\n                    city,\n                    town,\n                    has_multi_postal_code,\n                    has_chome,\n                    has_multi_town,\n                    update_code,\n                    update_reason\n                FROM utf_ken_all\n                WHERE utf_ken_all_id >= $3 AND postal_code LIKE $1\n                ORDER BY utf_ken_all_id\n                LIMIT $2\n                ",
   "describe": {
     "columns": [
       {
         "ordinal": 0,
+        "name": "utf_ken_all_id",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 1,
         "name": "local_government_code",
         "type_info": "Varchar"
       },
       {
-        "ordinal": 1,
+        "ordinal": 2,
         "name": "old_postal_code",
         "type_info": "Varchar"
       },
       {
-        "ordinal": 2,
+        "ordinal": 3,
         "name": "postal_code",
         "type_info": "Varchar"
       },
       {
-        "ordinal": 3,
+        "ordinal": 4,
         "name": "prefecture_kana",
         "type_info": "Varchar"
       },
       {
-        "ordinal": 4,
+        "ordinal": 5,
         "name": "city_kana",
         "type_info": "Varchar"
       },
       {
-        "ordinal": 5,
+        "ordinal": 6,
         "name": "town_kana",
         "type_info": "Varchar"
       },
       {
-        "ordinal": 6,
+        "ordinal": 7,
         "name": "prefecture",
         "type_info": "Varchar"
       },
       {
-        "ordinal": 7,
+        "ordinal": 8,
         "name": "city",
         "type_info": "Varchar"
       },
       {
-        "ordinal": 8,
+        "ordinal": 9,
         "name": "town",
         "type_info": "Varchar"
       },
       {
-        "ordinal": 9,
+        "ordinal": 10,
         "name": "has_multi_postal_code",
         "type_info": "Int2"
       },
       {
-        "ordinal": 10,
+        "ordinal": 11,
         "name": "has_chome",
         "type_info": "Int2"
       },
       {
-        "ordinal": 11,
+        "ordinal": 12,
         "name": "has_multi_town",
         "type_info": "Int2"
       },
       {
-        "ordinal": 12,
+        "ordinal": 13,
         "name": "update_code",
         "type_info": "Int2"
       },
       {
-        "ordinal": 13,
+        "ordinal": 14,
         "name": "update_reason",
         "type_info": "Int2"
       }
     ],
     "parameters": {
       "Left": [
-        "Text"
+        "Text",
+        "Int8",
+        "Int8"
       ]
     },
     "nullable": [
@@ -93,8 +100,9 @@
       false,
       false,
       false,
+      false,
       false
     ]
   },
-  "hash": "04b01cd2819fd27885b246438543aa4c47efc32e17e4903c9406d66a0754b4a1"
+  "hash": "cdcbd99a63f54be2cf3417a1809d385ed18aebbcb110ec1e414c9ed1edbc79e3"
 }

@@ -1,6 +1,8 @@
-use crate::repo::UtfKenAllRepository;
+use crate::repo::{UtfKenAllRepository, UtfKenAllRepositorySearchRequest};
 use jp_postal_code_core::model::UtfKenAllRecord;
-use jp_postal_code_core::normalize::normalize_utf_ken_all_record_town;
+use jp_postal_code_core::normalize::{
+    normalize_utf_ken_all_record_town, normalize_utf_ken_all_record_town_kana,
+};
 use jp_postal_code_util::{download, parse_utf_ken_all_zip, UTF_KEN_ALL_URL};
 
 /// 郵便番号データベースを更新する
@@ -28,7 +30,22 @@ where
     );
     download(utf_ken_all_zip_url, &mut tempfile).await?;
     tracing::info!(?tempfile, "Parse utf_ken_all.zip to records");
-    let records = parse_utf_ken_all_zip(tempfile)?;
+    let records = parse_utf_ken_all_zip(tempfile)?
+        .into_iter()
+        .flat_map(|r| {
+            let towns = normalize_utf_ken_all_record_town(&r);
+            let town_kanas = normalize_utf_ken_all_record_town_kana(&r);
+            towns
+                .into_iter()
+                .zip(town_kanas.into_iter())
+                .map(|(town, town_kana)| UtfKenAllRecord {
+                    town,
+                    town_kana,
+                    ..r.clone()
+                })
+                .collect::<Vec<_>>()
+        })
+        .collect::<Vec<_>>();
     tracing::info!(
         record_count = records.len(),
         "Replace database with the new records"
@@ -37,28 +54,48 @@ where
     Ok(())
 }
 
+#[derive(Debug)]
+pub struct SearchPostalCodeRequest<P, T>
+where
+    P: AsRef<str>,
+    T: AsRef<str>,
+{
+    pub postal_code: P,
+    pub page_size: Option<usize>,
+    pub page_token: Option<T>,
+}
+
+#[derive(Debug)]
+pub struct SearchPostalCodeResponse {
+    pub records: Vec<UtfKenAllRecord>,
+    pub next_page_token: Option<String>,
+}
+
 /// 郵便番号を検索する
-#[tracing::instrument(skip(repo, postal_code))]
-pub async fn search_postal_code<R>(
+#[tracing::instrument(skip(repo))]
+pub async fn search_postal_code<R, P, T>(
     repo: &R,
-    postal_code: impl AsRef<str>,
-) -> Result<Vec<UtfKenAllRecord>, anyhow::Error>
+    req: SearchPostalCodeRequest<P, T>,
+) -> Result<SearchPostalCodeResponse, anyhow::Error>
 where
     R: UtfKenAllRepository,
+    P: AsRef<str> + std::fmt::Debug,
+    T: AsRef<str> + std::fmt::Debug,
 {
-    let postal_code = postal_code.as_ref();
-    let records = repo.search(postal_code).await?;
-    let records = records
-        .into_iter()
-        .flat_map(|r| {
-            let towns = normalize_utf_ken_all_record_town(&r);
-            towns
-                .into_iter()
-                .map(|town| UtfKenAllRecord { town, ..r.clone() })
-                .collect::<Vec<_>>()
+    let postal_code = req.postal_code.as_ref();
+    let page_size = req.page_size;
+    let page_token = req.page_token.as_ref().map(|s| s.as_ref());
+    let response = repo
+        .search(UtfKenAllRepositorySearchRequest {
+            postal_code,
+            page_size,
+            page_token,
         })
-        .collect();
-    Ok(records)
+        .await?;
+    Ok(SearchPostalCodeResponse {
+        records: response.records,
+        next_page_token: response.next_page_token,
+    })
 }
 
 #[cfg(test)]
@@ -172,7 +209,16 @@ mod tests {
                 update_reason: 0,
             },
         ]);
-        let records = search_postal_code(&repo, "064").await.unwrap();
+        let records = search_postal_code(
+            &repo,
+            SearchPostalCodeRequest {
+                postal_code: "064",
+                page_size: None,
+                page_token: None::<&str>,
+            },
+        )
+        .await
+        .unwrap();
         insta::assert_debug_snapshot!(records);
     }
 }
