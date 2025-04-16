@@ -1,19 +1,19 @@
 ---
 source: jp-postal-code/src/infra/postgres.rs
-expression: records
+expression: response
 ---
 UtfKenAllRepositorySearchResponse {
     records: [
         UtfKenAllRecord {
             local_government_code: "01101",
-            old_postal_code: "064  ",
-            postal_code: "0640820",
+            old_postal_code: "060  ",
+            postal_code: "0600042",
             prefecture_kana: "ホッカイドウ",
             city_kana: "サッポロシチュウオウク",
-            town_kana: "オオドオリニシ（２０−２８チョウメ）",
+            town_kana: "オオドオリニシ（１−１９チョウメ）",
             prefecture: "北海道",
             city: "札幌市中央区",
-            town: "大通西（２０〜２８丁目）",
+            town: "大通西（１〜１９丁目）",
             has_multi_postal_code: 1,
             has_chome: 0,
             has_multi_town: 1,

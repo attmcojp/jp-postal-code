@@ -84,6 +84,15 @@ struct PostalAddress {
 #[derive(serde::Deserialize)]
 struct SearchQuery {
     postal_code: Option<String>,
+    page_size: Option<usize>,
+    page_token: Option<String>,
+}
+
+#[derive(serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+struct SearchResponse {
+    addresses: Vec<PostalAddress>,
+    next_page_token: Option<String>,
 }
 
 async fn search(
@@ -91,8 +100,17 @@ async fn search(
     axum::extract::State(state): axum::extract::State<AppState>,
 ) -> Result<impl axum::response::IntoResponse, AppError> {
     let postal_code = query.postal_code.unwrap_or("".to_string());
-    let records = usecase::search_postal_code(&state.repo, postal_code).await?;
-    let addresses = records
+    let response = usecase::search_postal_code(
+        &state.repo,
+        usecase::SearchPostalCodeRequest {
+            postal_code,
+            page_size: query.page_size,
+            page_token: query.page_token,
+        },
+    )
+    .await?;
+    let addresses = response
+        .records
         .into_iter()
         .map(|r| PostalAddress {
             postal_code: r.postal_code,
@@ -101,7 +119,13 @@ async fn search(
             town: r.town,
         })
         .collect::<Vec<_>>();
-    Ok((StatusCode::OK, Json(addresses)))
+    Ok((
+        StatusCode::OK,
+        Json(SearchResponse {
+            addresses,
+            next_page_token: response.next_page_token,
+        }),
+    ))
 }
 
 async fn update(
