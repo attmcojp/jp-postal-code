@@ -34,8 +34,8 @@ async fn main_internal() -> Result<(), anyhow::Error> {
         repo: infra::postgres::UtfKenAllRepositoryPostgres::new(pool),
     };
     let app = Router::new()
-        .route("/search", get(search))
-        .route("/update", post(update))
+        .route("/api/search", get(search))
+        .route("/api/update", post(update))
         .with_state(state);
 
     let listener = tokio::net::TcpListener::bind(conf.http_server_addr.as_str()).await?;
