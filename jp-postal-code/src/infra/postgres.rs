@@ -141,7 +141,7 @@ impl UtfKenAllRepository for UtfKenAllRepositoryPostgres {
                     update_reason
                 FROM utf_ken_all
                 WHERE utf_ken_all_id >= $3 AND postal_code LIKE $1
-                ORDER BY utf_ken_all_id
+                ORDER BY postal_code, town, town_kana
                 LIMIT $2
                 "#,
                 format!("{}%", postal_code),
@@ -172,7 +172,7 @@ impl UtfKenAllRepository for UtfKenAllRepositoryPostgres {
                     update_reason
                 FROM utf_ken_all
                 WHERE postal_code LIKE $1
-                ORDER BY utf_ken_all_id
+                ORDER BY postal_code, town, town_kana
                 LIMIT $2
                 "#,
                 format!("{}%", postal_code),

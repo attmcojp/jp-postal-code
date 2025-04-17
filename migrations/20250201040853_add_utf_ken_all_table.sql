@@ -17,7 +17,8 @@ create table utf_ken_all (
   updated_at timestamp with time zone not null
 );
 
-create index idx_utf_ken_all_postal_code on utf_ken_all (postal_code);
+create index idx_utf_ken_all_postal_code_town_town_kana on utf_ken_all (postal_code, town, town_kana);
+
 comment on table utf_ken_all is '郵便局が配布している郵便番号データを正規化したデータ';
 comment on column utf_ken_all.utf_ken_all_id is 'レコードのID';
 comment on column utf_ken_all.local_government_code is '全国地方公共団体コード（JIS X0401、X0402）';
