@@ -26,4 +26,4 @@ services:
     environment:
       DATABASE_URL: "postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@host.docker.internal/jp_postal_code"
     ports:
-      - "8000:8000"
+      - "8000:80"
