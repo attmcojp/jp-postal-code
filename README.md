@@ -9,6 +9,7 @@
 > 初回起動時は自動的に郵便番号データベース構築を行なうため、少し起動に時間がかかる
 
 ```sh
+docker compose build
 docker compose up -d
 ```
 
