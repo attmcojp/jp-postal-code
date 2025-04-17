@@ -112,7 +112,7 @@ async fn search(
         },
     )
     .await?;
-    let mut addresses = response
+    let addresses = response
         .records
         .into_iter()
         .map(|r| PostalAddress {
@@ -125,8 +125,6 @@ async fn search(
             town_kana: r.town_kana,
         })
         .collect::<Vec<_>>();
-    addresses.sort_by(|a, b| a.town.cmp(&b.town));
-    addresses.sort_by(|a, b| a.postal_code.cmp(&b.postal_code));
     Ok((
         StatusCode::OK,
         Json(SearchResponse {

@@ -1,5 +1,5 @@
 services:
-  postgres:
+  db:
     restart: unless-stopped
     image: postgres:alpine
     environment:
@@ -20,6 +20,6 @@ services:
         # ARM64 系ランナーに変更したうえで、下記制限を linux/arm64 に変更すること
         - linux/amd64
     environment:
-      DATABASE_URL: "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres/${POSTGRES_DB}"
+      DATABASE_URL: "postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@host.docker.internal/jp_postal_code"
     ports:
       - "8000:8000"
