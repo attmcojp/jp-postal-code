@@ -15,7 +15,7 @@ on:
 
 jobs:
   docker-build:
-    runs-on: "ubuntu-latest"
+    runs-on: "macos-latest" # arm64 ネイティブにするため
     permissions:
       contents: read
       id-token: write
@@ -37,6 +37,7 @@ jobs:
         with:
           context: .
           push: true
+          platforms: linux/arm64
           cache-from: type=gha
           cache-to: type=gha,mode=max
           tags: ${{ steps.meta.outputs.tags }}
