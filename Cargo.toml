@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = [ "jp-postal-code","jp-postal-code-core", "jp-postal-code-util", "jp-postal-code-update-database"]
+members = [ "jp-postal-code","jp-postal-code-core", "jp-postal-code-util", "jp-postal-code-update-database", "jp-postal-address"]
 
 [workspace.package]
 authors = ["At mark, Inc."]
@@ -17,3 +17,4 @@ tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
 jp-postal-code-core = { path = "./jp-postal-code-core" }
 jp-postal-code-util = { path = "./jp-postal-code-util" }
+

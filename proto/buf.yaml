@@ -1,0 +1,11 @@
+version: v2
+lint:
+  use:
+    - STANDARD
+breaking:
+  use:
+    - FILE
+# This is the default behavior if the modules key isn't specified.
+# Deleting the modules section here has no effect.
+modules:
+  - path: .

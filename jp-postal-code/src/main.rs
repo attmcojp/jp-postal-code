@@ -1,5 +1,10 @@
 use axum::{http::StatusCode, routing::get, Json, Router};
-use jp_postal_code::{config, infra, repo::UtfKenAllRepository as _, usecase, MIGRATOR};
+use jp_postal_address::postal_address_service_server::PostalAddressServiceServer;
+use jp_postal_code::{
+    config, grpc_service, infra, repo::UtfKenAllRepository as _, usecase, MIGRATOR,
+};
+use tonic::transport::Server;
+use tower_http::trace::{DefaultOnFailure, DefaultOnResponse, TraceLayer};
 use tracing_subscriber::prelude::*;
 
 #[tokio::main]
@@ -26,7 +31,7 @@ async fn main_internal() -> Result<(), anyhow::Error> {
     let pool = sqlx::PgPool::connect(conf.database_url.as_ref()).await?;
     MIGRATOR.run(&pool).await?;
 
-    let mut repo = infra::postgres::UtfKenAllRepositoryPostgres::new(pool);
+    let mut repo = infra::postgres::UtfKenAllRepositoryPostgres::new(pool.clone());
 
     // 郵便番号データベースが空ならば初回ダウンロードを行う
     if repo.count().await? == 0 {
@@ -34,16 +39,60 @@ async fn main_internal() -> Result<(), anyhow::Error> {
         usecase::update_postal_code_database(&mut repo, None::<String>).await?;
     }
 
-    let state = AppState { repo };
-    let app = Router::new()
+    // HTTP サーバーの設定
+    let http_state = AppState {
+        repo: infra::postgres::UtfKenAllRepositoryPostgres::new(pool.clone()),
+    };
+    let http_app = Router::new()
         .route("/api/search", get(search))
-        .with_state(state);
+        .layer(
+            TraceLayer::new_for_http()
+                .on_response(DefaultOnResponse::new().level(tracing::Level::INFO))
+                .on_failure(DefaultOnFailure::new().level(tracing::Level::ERROR)),
+        )
+        .with_state(http_state);
 
-    let listener = tokio::net::TcpListener::bind(conf.http_server_addr.as_str()).await?;
-    tracing::info!("Listening on http://{}", conf.http_server_addr.as_str());
-    axum::serve(listener, app).await?;
+    // gRPC サーバーの設定
+    let grpc_service = grpc_service::PostalAddressServiceImpl::new(
+        infra::postgres::UtfKenAllRepositoryPostgres::new(pool),
+    );
 
-    Ok(())
+    let http_addr = conf.http_server_addr.clone();
+    let grpc_addr = conf.grpc_server_addr.clone();
+
+    // HTTP と gRPC サーバーを並行実行
+    let (http_result, grpc_result) = tokio::join!(
+        start_http_server(http_addr, http_app),
+        start_grpc_server(grpc_addr, grpc_service)
+    );
+
+    // どちらかがエラーで終了した場合はエラーを返す
+    match (http_result, grpc_result) {
+        (Ok(_), Ok(_)) => Ok(()),
+        (Err(e), _) | (_, Err(e)) => Err(e),
+    }
+}
+
+async fn start_http_server(addr: String, app: Router) -> Result<(), anyhow::Error> {
+    let listener = tokio::net::TcpListener::bind(&addr).await?;
+    tracing::info!("HTTP server listening on http://{}", addr);
+    axum::serve(listener, app)
+        .await
+        .map_err(anyhow::Error::from)
+}
+
+async fn start_grpc_server(
+    addr: String,
+    service: grpc_service::PostalAddressServiceImpl,
+) -> Result<(), anyhow::Error> {
+    let addr = addr.parse()?;
+    tracing::info!("gRPC server listening on {}", addr);
+
+    Server::builder()
+        .add_service(PostalAddressServiceServer::new(service))
+        .serve(addr)
+        .await
+        .map_err(anyhow::Error::from)
 }
 
 #[derive(Debug, thiserror::Error)]

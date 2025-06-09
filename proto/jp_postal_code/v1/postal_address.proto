@@ -1,0 +1,20 @@
+syntax = "proto3";
+package jp_postal_code.v1;
+
+// 郵便番号住所
+message PostalAddress {
+  // 郵便番号
+  string postal_code = 1;
+  // 都道府県
+  string prefecture = 2;
+  // 市区町村
+  string city = 3;
+  // 町域
+  string town = 4;
+  // 都道府県（仮名）
+  string prefecture_kana = 5;
+  // 市区町村（仮名）
+  string city_kana = 6;
+  // 町域（仮名）
+  string town_kana = 7;
+}

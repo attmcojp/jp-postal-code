@@ -1,0 +1,25 @@
+syntax = "proto3";
+package jp_postal_code.v1;
+
+import "jp_postal_code/v1/postal_address.proto";
+
+// 郵便番号に対応する住所を検索するリクエスト
+message SearchPostalAddressRequest {
+  // 検索クエリ
+  string postal_code = 1;
+  // 検索結果の最大件数
+  optional int32 page_size = 2;
+  // ページトークン
+  optional string page_token = 3;
+}
+
+// 郵便番号に対応する住所を検索するレスポンス
+message SearchPostalAddressResponse {
+  message Item {
+    PostalAddress address = 1;
+  }
+  // 検索結果
+  repeated Item items = 1;
+  // 次のページトークン
+  optional string next_page_token = 3;
+}
