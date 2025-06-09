@@ -1,4 +1,4 @@
-use jp_postal_address::{
+use jp_postal_code_proto::{
     postal_address_service_server::PostalAddressService, search_postal_address_response,
     PostalAddress, SearchPostalAddressRequest, SearchPostalAddressResponse,
 };
