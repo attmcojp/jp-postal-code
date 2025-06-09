@@ -1454,16 +1454,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "jp-postal-address"
-version = "0.0.0"
-dependencies = [
- "prost",
- "prost-types",
- "tonic",
- "tonic-build",
-]
-
-[[package]]
 name = "jp-postal-code"
 version = "0.0.0"
 dependencies = [
@@ -1475,8 +1465,8 @@ dependencies = [
  "dotenvy",
  "envy",
  "insta",
- "jp-postal-address",
  "jp-postal-code-core",
+ "jp-postal-code-proto",
  "jp-postal-code-util",
  "mockito",
  "serde",
@@ -1502,6 +1492,16 @@ dependencies = [
  "regex",
  "serde",
  "serde_json",
+]
+
+[[package]]
+name = "jp-postal-code-proto"
+version = "0.0.0"
+dependencies = [
+ "prost",
+ "prost-types",
+ "tonic",
+ "tonic-build",
 ]
 
 [[package]]

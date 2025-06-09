@@ -44,20 +44,21 @@ xh 'http://localhost:8000/api/search?postal_code=0120&page_size=3&page_token=eyJ
 ```
 
 レスポンス例：
+
 ```json
 {
-    "addresses": [
-        {
-            "postalCode": "0120013",
-            "prefecture": "秋田県",
-            "prefectureKana": "アキタケン",
-            "city": "湯沢市",
-            "cityKana": "ユザワシ",
-            "town": "栄田",
-            "townKana": "サカエダ"
-        }
-    ],
-    "nextPageToken": "eyJ1dGZfa2VuX2FsbF9pZCI6MTg0NTV9"
+  "addresses": [
+    {
+      "postalCode": "0120013",
+      "prefecture": "秋田県",
+      "prefectureKana": "アキタケン",
+      "city": "湯沢市",
+      "cityKana": "ユザワシ",
+      "town": "栄田",
+      "townKana": "サカエダ"
+    }
+  ],
+  "nextPageToken": "eyJ1dGZfa2VuX2FsbF9pZCI6MTg0NTV9"
 }
 ```
 
@@ -87,6 +88,7 @@ grpcurl -plaintext -d '{
 ```
 
 レスポンス例：
+
 ```json
 {
   "items": [
@@ -119,8 +121,8 @@ cargo run -p jp-postal-code-update-database
 # カスタムURLから更新
 cargo run -p jp-postal-code-update-database -- --url "https://example.com/ken_all_utf8.zip"
 
-# ビルド済みバイナリを使用
-./target/release/jp-postal-code-update-database --help
+# Dockerイメージを使用
+docker compose run --rm -it jp-postal-code /bin/update-database
 ```
 
 環境変数 `DATABASE_URL` でPostgreSQLの接続先を指定してください。

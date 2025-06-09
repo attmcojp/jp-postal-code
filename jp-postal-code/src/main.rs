@@ -1,9 +1,9 @@
 use anyhow::Context as _;
 use axum::{http::StatusCode, routing::get, Json, Router};
-use jp_postal_address::postal_address_service_server::PostalAddressServiceServer;
 use jp_postal_code::{
     config, grpc_service, infra, reflection, repo::UtfKenAllRepository as _, usecase, MIGRATOR,
 };
+use jp_postal_code_proto::postal_address_service_server::PostalAddressServiceServer;
 use std::net::ToSocketAddrs;
 use tonic::transport::Server;
 use tower_http::trace::{DefaultOnFailure, DefaultOnResponse, TraceLayer};
