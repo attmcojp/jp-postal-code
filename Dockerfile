@@ -41,7 +41,9 @@ LABEL org.opencontainers.image.source=https://github.com/attmcojp/jp-postal-code
 
 COPY --from=builder /bin/server /bin/
 
-ENV HTTP_SERVER_ADDR=0.0.0.0:80
+ENV HTTP_SERVER_ADDR=0.0.0.0:80 \
+    GRPC_SERVER_ADDR=0.0.0:50051
 EXPOSE 80
+EXPOSE 50051
 
 CMD ["/bin/server"]
