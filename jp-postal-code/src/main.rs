@@ -61,16 +61,11 @@ async fn main_internal() -> Result<(), anyhow::Error> {
     let grpc_addr = conf.grpc_server_addr.clone();
 
     // HTTP と gRPC サーバーを並行実行
-    let (http_result, grpc_result) = tokio::join!(
+    tokio::try_join!(
         start_http_server(http_addr, http_app),
         start_grpc_server(grpc_addr, grpc_service)
-    );
-
-    // どちらかがエラーで終了した場合はエラーを返す
-    match (http_result, grpc_result) {
-        (Ok(_), Ok(_)) => Ok(()),
-        (Err(e), _) | (_, Err(e)) => Err(e),
-    }
+    )?;
+    Ok(())
 }
 
 async fn start_http_server(addr: String, app: Router) -> Result<(), anyhow::Error> {
