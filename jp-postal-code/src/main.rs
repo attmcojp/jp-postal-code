@@ -6,7 +6,10 @@ use jp_postal_code::{
 use jp_postal_code_proto::postal_address_service_server::PostalAddressServiceServer;
 use std::net::ToSocketAddrs;
 use tonic::transport::Server;
-use tower_http::trace::{DefaultOnFailure, DefaultOnResponse, TraceLayer};
+use tower_http::{
+    cors::CorsLayer,
+    trace::{DefaultOnFailure, DefaultOnResponse, TraceLayer},
+};
 use tracing_subscriber::prelude::*;
 
 #[tokio::main]
@@ -47,6 +50,7 @@ async fn main_internal() -> Result<(), anyhow::Error> {
     };
     let http_app = Router::new()
         .route("/api/search", get(search))
+        .layer(CorsLayer::permissive())
         .layer(
             TraceLayer::new_for_http()
                 .on_response(DefaultOnResponse::new().level(tracing::Level::INFO))
