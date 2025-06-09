@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = [ "jp-postal-code","jp-postal-code-core", "jp-postal-code-util"]
+members = [ "jp-postal-code","jp-postal-code-core", "jp-postal-code-util", "jp-postal-code-update-database"]
 
 [workspace.package]
 authors = ["At mark, Inc."]
