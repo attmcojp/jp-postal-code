@@ -30,7 +30,7 @@ fmt-proto:
 
 # 開発サーバーを起動する
 dev:
-  cargo run
+  cargo run --bin jp-postal-code
 
 # Docker でサービスを起動する
 up:
