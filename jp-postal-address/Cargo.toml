@@ -1,0 +1,15 @@
+[package]
+name = "jp-postal-address"
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+version.workspace = true
+
+[dependencies]
+prost = "0.13.5"
+prost-types = "0.13.5"
+tonic = "0.12.3"
+
+[build-dependencies]
+tonic-build = "0.12.3"
