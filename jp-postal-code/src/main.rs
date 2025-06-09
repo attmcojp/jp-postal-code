@@ -2,7 +2,7 @@ use anyhow::Context as _;
 use axum::{http::StatusCode, routing::get, Json, Router};
 use jp_postal_address::postal_address_service_server::PostalAddressServiceServer;
 use jp_postal_code::{
-    config, grpc_service, infra, repo::UtfKenAllRepository as _, usecase, MIGRATOR,
+    config, grpc_service, infra, reflection, repo::UtfKenAllRepository as _, usecase, MIGRATOR,
 };
 use std::net::ToSocketAddrs;
 use tonic::transport::Server;
@@ -92,6 +92,7 @@ async fn start_grpc_server(
     tracing::info!("gRPC server listening on {}", addr);
 
     Server::builder()
+        .add_service(reflection::reflection_service()?)
         .add_service(PostalAddressServiceServer::new(service))
         .serve(addr)
         .await

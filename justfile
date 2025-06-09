@@ -18,7 +18,7 @@ fmt:
 # Protobuf からソースコードを生成する
 gen-proto:
   rm -rf jp-postal-address/src/_gen
-  cd proto && buf generate
+  cd proto && buf generate && buf build -o ../jp-postal-address/src/_gen/jp_postal_code.file_descriptor.binpb
 
 # Protobuf の Lint を実行する
 lint-proto:
