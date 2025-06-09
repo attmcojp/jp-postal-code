@@ -1,8 +1,4 @@
-use axum::{
-    http::StatusCode,
-    routing::{get, post},
-    Json, Router,
-};
+use axum::{http::StatusCode, routing::get, Json, Router};
 use jp_postal_code::{config, infra, repo::UtfKenAllRepository as _, usecase, MIGRATOR};
 use tracing_subscriber::prelude::*;
 
@@ -41,7 +37,6 @@ async fn main_internal() -> Result<(), anyhow::Error> {
     let state = AppState { repo };
     let app = Router::new()
         .route("/api/search", get(search))
-        .route("/api/update", post(update))
         .with_state(state);
 
     let listener = tokio::net::TcpListener::bind(conf.http_server_addr.as_str()).await?;
@@ -132,11 +127,4 @@ async fn search(
             next_page_token: response.next_page_token,
         }),
     ))
-}
-
-async fn update(
-    axum::extract::State(mut state): axum::extract::State<AppState>,
-) -> Result<impl axum::response::IntoResponse, AppError> {
-    usecase::update_postal_code_database(&mut state.repo, None::<String>).await?;
-    Ok(StatusCode::NO_CONTENT)
 }
