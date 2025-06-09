@@ -5,10 +5,17 @@ pub struct Config {
     /// HTTP サーバーのアドレス
     #[serde(default = "default_http_server_addr")]
     pub http_server_addr: String,
+    /// gRPC サーバーのアドレス
+    #[serde(default = "default_grpc_server_addr")]
+    pub grpc_server_addr: String,
 }
 
 fn default_http_server_addr() -> String {
     "localhost:8000".to_string()
+}
+
+fn default_grpc_server_addr() -> String {
+    "localhost:50051".to_string()
 }
 
 impl Default for Config {
