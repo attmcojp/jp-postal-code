@@ -1,8 +1,10 @@
+use anyhow::Context as _;
 use axum::{http::StatusCode, routing::get, Json, Router};
 use jp_postal_address::postal_address_service_server::PostalAddressServiceServer;
 use jp_postal_code::{
-    config, grpc_service, infra, repo::UtfKenAllRepository as _, usecase, MIGRATOR,
+    config, grpc_service, infra, reflection, repo::UtfKenAllRepository as _, usecase, MIGRATOR,
 };
+use std::net::ToSocketAddrs;
 use tonic::transport::Server;
 use tower_http::trace::{DefaultOnFailure, DefaultOnResponse, TraceLayer};
 use tracing_subscriber::prelude::*;
@@ -61,20 +63,17 @@ async fn main_internal() -> Result<(), anyhow::Error> {
     let grpc_addr = conf.grpc_server_addr.clone();
 
     // HTTP と gRPC サーバーを並行実行
-    let (http_result, grpc_result) = tokio::join!(
+    tokio::try_join!(
         start_http_server(http_addr, http_app),
         start_grpc_server(grpc_addr, grpc_service)
-    );
-
-    // どちらかがエラーで終了した場合はエラーを返す
-    match (http_result, grpc_result) {
-        (Ok(_), Ok(_)) => Ok(()),
-        (Err(e), _) | (_, Err(e)) => Err(e),
-    }
+    )?;
+    Ok(())
 }
 
 async fn start_http_server(addr: String, app: Router) -> Result<(), anyhow::Error> {
-    let listener = tokio::net::TcpListener::bind(&addr).await?;
+    let listener = tokio::net::TcpListener::bind(&addr)
+        .await
+        .with_context(|| format!("Failed to bind HTTP server address: {}", addr))?;
     tracing::info!("HTTP server listening on http://{}", addr);
     axum::serve(listener, app)
         .await
@@ -85,10 +84,15 @@ async fn start_grpc_server(
     addr: String,
     service: grpc_service::PostalAddressServiceImpl,
 ) -> Result<(), anyhow::Error> {
-    let addr = addr.parse()?;
+    let addr: std::net::SocketAddr = addr
+        .to_socket_addrs()
+        .with_context(|| format!("Failed to parse gRPC address: {}", addr))?
+        .next()
+        .with_context(|| format!("No valid address is parsed from gRPC address: {}", addr))?;
     tracing::info!("gRPC server listening on {}", addr);
 
     Server::builder()
+        .add_service(reflection::reflection_service()?)
         .add_service(PostalAddressServiceServer::new(service))
         .serve(addr)
         .await

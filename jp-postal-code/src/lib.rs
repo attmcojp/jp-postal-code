@@ -1,6 +1,7 @@
 pub mod config;
 pub mod grpc_service;
 pub mod infra;
+pub mod reflection;
 pub mod repo;
 pub mod usecase;
 
