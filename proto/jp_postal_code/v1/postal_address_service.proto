@@ -1,0 +1,10 @@
+syntax = "proto3";
+package jp_postal_code.v1;
+
+import "jp_postal_code/v1/search_postal_address.proto";
+
+// 郵便番号サービス
+service PostalAddressService {
+  // 郵便番号に対応する住所を検索する
+  rpc SearchPostalAddress(SearchPostalAddressRequest) returns (SearchPostalAddressResponse);
+}
