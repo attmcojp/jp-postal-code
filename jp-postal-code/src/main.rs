@@ -4,6 +4,7 @@ use jp_postal_address::postal_address_service_server::PostalAddressServiceServer
 use jp_postal_code::{
     config, grpc_service, infra, repo::UtfKenAllRepository as _, usecase, MIGRATOR,
 };
+use std::net::ToSocketAddrs;
 use tonic::transport::Server;
 use tower_http::trace::{DefaultOnFailure, DefaultOnResponse, TraceLayer};
 use tracing_subscriber::prelude::*;
@@ -83,9 +84,11 @@ async fn start_grpc_server(
     addr: String,
     service: grpc_service::PostalAddressServiceImpl,
 ) -> Result<(), anyhow::Error> {
-    let addr = addr
-        .parse()
-        .with_context(|| format!("Failed to parse gRPC address: {}", addr))?;
+    let addr: std::net::SocketAddr = addr
+        .to_socket_addrs()
+        .with_context(|| format!("Failed to parse gRPC address: {}", addr))?
+        .next()
+        .with_context(|| format!("No valid address is parsed from gRPC address: {}", addr))?;
     tracing::info!("gRPC server listening on {}", addr);
 
     Server::builder()
