@@ -1,3 +1,4 @@
+use anyhow::Context as _;
 use axum::{http::StatusCode, routing::get, Json, Router};
 use jp_postal_address::postal_address_service_server::PostalAddressServiceServer;
 use jp_postal_code::{
@@ -69,7 +70,9 @@ async fn main_internal() -> Result<(), anyhow::Error> {
 }
 
 async fn start_http_server(addr: String, app: Router) -> Result<(), anyhow::Error> {
-    let listener = tokio::net::TcpListener::bind(&addr).await?;
+    let listener = tokio::net::TcpListener::bind(&addr)
+        .await
+        .with_context(|| format!("Failed to bind HTTP server address: {}", addr))?;
     tracing::info!("HTTP server listening on http://{}", addr);
     axum::serve(listener, app)
         .await
@@ -80,7 +83,9 @@ async fn start_grpc_server(
     addr: String,
     service: grpc_service::PostalAddressServiceImpl,
 ) -> Result<(), anyhow::Error> {
-    let addr = addr.parse()?;
+    let addr = addr
+        .parse()
+        .with_context(|| format!("Failed to parse gRPC address: {}", addr))?;
     tracing::info!("gRPC server listening on {}", addr);
 
     Server::builder()
