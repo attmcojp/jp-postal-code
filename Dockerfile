@@ -33,13 +33,15 @@ RUN --mount=type=cache,target=/tmp/cargo-target/ \
     --mount=type=cache,target=/usr/local/cargo/git/ \
     --mount=type=cache,target=$SCCACHE_DIR,sharing=locked \
     cargo build --locked --release \
- && cp /tmp/cargo-target/release/jp-postal-code /bin/server
+ && cp /tmp/cargo-target/release/jp-postal-code /bin/server \
+ && cp /tmp/cargo-target/release/jp-postal-code-update-database /bin/update-database
 
 #---
 FROM alpine
 LABEL org.opencontainers.image.source=https://github.com/attmcojp/jp-postal-code
 
 COPY --from=builder /bin/server /bin/
+COPY --from=builder /bin/update-database /bin/update-database
 
 ENV HTTP_SERVER_ADDR=0.0.0.0:80 \
     GRPC_SERVER_ADDR=0.0.0:50051
