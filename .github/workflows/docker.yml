@@ -15,7 +15,10 @@ on:
 
 jobs:
   docker-build:
-    runs-on: "ubuntu-latest"
+    strategy:
+      matrix:
+        os: [ubuntu-latest, ubuntu-24.04-arm]
+    runs-on: ${{ matrix.os }}
     permissions:
       contents: read
       id-token: write
