@@ -8,7 +8,7 @@
 - **jp-postal-code-update-database**: 郵便番号データベース更新のCLIツール
 - **jp-postal-code-core**: 郵便番号データの正規化処理
 - **jp-postal-code-util**: 郵便番号データのダウンロード・パース処理
-- **jp-postal-address**: gRPCサービス用のProtocol Buffers定義
+- **jp-postal-code-proto**: gRPCサービス用のProtocol Buffers定義
 
 ## 起動
 
