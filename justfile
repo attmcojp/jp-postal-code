@@ -32,24 +32,6 @@ fmt-proto:
 dev:
   cargo run --bin jp-postal-code
 
-# Docker でサービスを起動する
-up:
-  docker compose up -d
-
-# Docker でサービスを停止する
-down:
-  docker compose down
-
-# Docker イメージをビルドする
-build:
-  docker compose build
-
 # データベースマイグレーションを実行する
 migrate:
   cargo run --bin jp-postal-code-update-database
-
-# 必要なツールをインストールする（MacOS）
-setup-tools-mac:
-  brew install bufbuild/buf/buf
-  brew install protobuf
-  brew install just
