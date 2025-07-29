@@ -77,7 +77,7 @@ async fn main_internal() -> Result<(), anyhow::Error> {
 async fn start_http_server(addr: String, app: Router) -> Result<(), anyhow::Error> {
     let listener = tokio::net::TcpListener::bind(&addr)
         .await
-        .with_context(|| format!("Failed to bind HTTP server address: {}", addr))?;
+        .with_context(|| format!("Failed to bind HTTP server address: {addr}"))?;
     tracing::info!("HTTP server listening on http://{}", addr);
     axum::serve(listener, app)
         .await
@@ -90,9 +90,9 @@ async fn start_grpc_server(
 ) -> Result<(), anyhow::Error> {
     let addr: std::net::SocketAddr = addr
         .to_socket_addrs()
-        .with_context(|| format!("Failed to parse gRPC address: {}", addr))?
+        .with_context(|| format!("Failed to parse gRPC address: {addr}"))?
         .next()
-        .with_context(|| format!("No valid address is parsed from gRPC address: {}", addr))?;
+        .with_context(|| format!("No valid address is parsed from gRPC address: {addr}"))?;
     tracing::info!("gRPC server listening on {}", addr);
 
     Server::builder()
@@ -113,7 +113,7 @@ impl axum::response::IntoResponse for AppError {
     fn into_response(self) -> axum::response::Response {
         (
             StatusCode::INTERNAL_SERVER_ERROR,
-            format!("Something went wrong: {}", self),
+            format!("Something went wrong: {self}"),
         )
             .into_response()
     }

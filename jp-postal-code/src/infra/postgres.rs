@@ -30,7 +30,7 @@ impl std::fmt::Display for PageToken {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let encoded = serde_json::to_vec(self).expect("failed to JSON serialize PageToken");
         let token = base64_url::encode(&encoded);
-        write!(f, "{}", token)
+        write!(f, "{token}")
     }
 }
 

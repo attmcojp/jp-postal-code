@@ -17,15 +17,23 @@
 > 初回起動時は自動的に郵便番号データベース構築を行なうため、少し起動に時間がかかります
 
 ```sh
-docker compose build
+cp .env.sample .env
 docker compose up -d
 ```
 
 HTTPサーバーはポート8000、gRPCサーバーはポート50051で起動します。
 
-## 使用方法
+## 環境変数
 
-### 郵便番号検索（HTTP API）
+アプリケーションは以下の環境変数で設定をカスタマイズできます：
+
+| 環境変数           | 説明                            | デフォルト値                                             | 必須 |
+| ------------------ | ------------------------------- | -------------------------------------------------------- | ---- |
+| `DATABASE_URL`     | PostgreSQLデータベースの接続URL | -                                                        | ✓    |
+| `HTTP_SERVER_ADDR` | HTTPサーバーのリッスンアドレス  | `localhost:8000` (開発環境)<br>`0.0.0.0:80` (Docker)     | -    |
+| `GRPC_SERVER_ADDR` | gRPCサーバーのリッスンアドレス  | `localhost:50051` (開発環境)<br>`0.0.0.0:50051` (Docker) | -    |
+
+## 使用方法
 
 郵便番号データベースから対応する住所を返します。以下のパラメータを指定可能：
 
@@ -35,12 +43,11 @@ HTTPサーバーはポート8000、gRPCサーバーはポート50051で起動し
 | page_size   | 1ページあたりの件数（デフォルト: 10）                                         |
 | page_token  | ページトークン。戻り値の `nextPageToken` を指定すると、その続きから結果を返す |
 
-```sh
-# cURLの例
-curl 'http://localhost:8000/api/search?postal_code=0120&page_size=3'
+### REST API
 
-# xhの例
-xh 'http://localhost:8000/api/search?postal_code=0120&page_size=3&page_token=eyJ1dGZfa2VuX2FsbF9pZCI6MTg0NTF9'
+```sh
+# 郵便番号検索
+curl 'http://localhost:8000/api/search?postal_code=0120&page_size=3'
 ```
 
 レスポンス例：
@@ -62,18 +69,9 @@ xh 'http://localhost:8000/api/search?postal_code=0120&page_size=3&page_token=eyJ
 }
 ```
 
-### 郵便番号検索（gRPC API）
-
-gRPCサーバーもHTTP APIと同様の機能を提供します。ポート50051でサービスを提供しています。
-
-Protocol Buffers定義: `proto/jp_postal_code/v1/`
-
-#### grpcurl での例
+### gRPC
 
 ```sh
-# grpcurl のインストール（macOS）
-brew install grpcurl
-
 # サービス一覧の確認
 grpcurl -plaintext localhost:50051 list
 
@@ -125,32 +123,15 @@ cargo run -p jp-postal-code-update-database -- --url "https://example.com/ken_al
 docker compose run --rm -it jp-postal-code /bin/update-database
 ```
 
-環境変数 `DATABASE_URL` でPostgreSQLの接続先を指定してください。
-
 ## 開発
 
 ### Just タスクランナー
 
 開発効率化のため [just](https://github.com/casey/just) タスクランナーを使用しています。
 
-#### インストール
-
-```sh
-# macOS
-brew install just
-
-# その他のプラットフォーム
-# https://github.com/casey/just#installation を参照
-```
-
-#### 利用可能なタスク
-
 ```sh
 # タスク一覧を表示
 just
-
-# 開発に必要なツールをインストール（macOS）
-just setup-tools-mac
 
 # コードの品質チェック（clippy + protobuf lint）
 just check
@@ -167,31 +148,6 @@ just gen-proto
 # 開発サーバー起動
 just dev
 
-# Docker サービス起動
-just up
-
-# Docker サービス停止
-just down
-
-# Docker イメージビルド
-just build
-
 # データベースマイグレーション実行
 just migrate
-```
-
-### 従来のCargo コマンド
-
-```sh
-# 全テスト実行
-cargo test
-
-# 特定のクレートのテスト実行
-cargo test -p jp-postal-code-core
-
-# 全クレートビルド
-cargo build --release
-
-# 特定のクレートビルド
-cargo build -p jp-postal-code-update-database --release
 ```

@@ -173,10 +173,7 @@ pub fn normalize_utf_ken_all_record_town_kana(record: &UtfKenAllRecord) -> Vec<S
             );
             // 括弧有り丁目の場合は親住所も加える
             suffixes.push("".to_string());
-            return suffixes
-                .iter()
-                .map(|s| format!("{}{}", prefix, s))
-                .collect();
+            return suffixes.iter().map(|s| format!("{prefix}{s}")).collect();
         }
     }
 
@@ -193,10 +190,7 @@ pub fn normalize_utf_ken_all_record_town_kana(record: &UtfKenAllRecord) -> Vec<S
             let prefix = PATTERN.replace_all(&town_kana, "").to_string();
             let suffixes = zenkaku::zenkaku_range_label(&caps[1], &caps[2]);
             // 括弧有り地割の場合は親住所は加えない
-            return suffixes
-                .iter()
-                .map(|s| format!("{}{}", prefix, s))
-                .collect();
+            return suffixes.iter().map(|s| format!("{prefix}{s}")).collect();
         }
     }
 
@@ -211,10 +205,7 @@ pub fn normalize_utf_ken_all_record_town_kana(record: &UtfKenAllRecord) -> Vec<S
             let mut suffixes = zenkaku::zenkaku_range_label(&caps[1], &caps[2]);
             // 括弧無し地割の場合は親住所も加える
             suffixes.push("".to_string());
-            return suffixes
-                .iter()
-                .map(|s| format!("{}{}", prefix, s))
-                .collect();
+            return suffixes.iter().map(|s| format!("{prefix}{s}")).collect();
         }
     }
 
@@ -229,10 +220,7 @@ pub fn normalize_utf_ken_all_record_town_kana(record: &UtfKenAllRecord) -> Vec<S
             let mut suffixes = zenkaku::zenkaku_range_label(&caps[1], &caps[3]);
             // 括弧無し地割の場合は親住所も加える
             suffixes.push(caps[2].to_string());
-            return suffixes
-                .iter()
-                .map(|s| format!("{}{}", prefix, s))
-                .collect();
+            return suffixes.iter().map(|s| format!("{prefix}{s}")).collect();
         }
     }
 
@@ -249,10 +237,7 @@ pub fn normalize_utf_ken_all_record_town_kana(record: &UtfKenAllRecord) -> Vec<S
             let inner = inner.replace("ヲフクム", "");
             let suffixes: Vec<_> = inner.split("・").collect();
             // 括弧有り中点列挙の場合は親住所を加えない
-            return suffixes
-                .iter()
-                .map(|s| format!("{}{}", prefix, s))
-                .collect();
+            return suffixes.iter().map(|s| format!("{prefix}{s}")).collect();
         }
     }
 
@@ -275,10 +260,7 @@ pub fn normalize_utf_ken_all_record_town_kana(record: &UtfKenAllRecord) -> Vec<S
             let mut suffixes: Vec<_> = inner.split("、").collect();
             // 括弧有り句点列挙の場合は親住所も加える
             suffixes.push("");
-            return suffixes
-                .iter()
-                .map(|s| format!("{}{}", prefix, s))
-                .collect();
+            return suffixes.iter().map(|s| format!("{prefix}{s}")).collect();
         }
     }
 
