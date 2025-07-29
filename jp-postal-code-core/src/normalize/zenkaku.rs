@@ -32,7 +32,7 @@ pub fn from_zenkaku_numeric(s: &str) -> usize {
         })
         .collect();
     n.parse()
-        .unwrap_or_else(|e| panic!("Failed to parse {}: {}", s, e))
+        .unwrap_or_else(|e| panic!("Failed to parse {s}: {e}"))
 }
 
 /// 数値を全角数字列に変換する
