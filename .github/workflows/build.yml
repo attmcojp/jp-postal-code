@@ -50,7 +50,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions-rust-lang/setup-rust-toolchain@v1
-      - uses: k1LoW/runn-action@latest
       - name: Start gRPC server
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/jp_postal_code
@@ -58,6 +57,7 @@ jobs:
           cargo build --release --bin jp-postal-code
           cargo run --release --bin jp-postal-code &
           sleep 10  # Wait for server to start and initialize database
-      - name: Run runn tests
-        run: runn run tests/runn/*.yml
+      - uses: k2tzumi/runn-action@latest
+        with:
+          path_pattern: tests/runn/*.yml
     timeout-minutes: 10
