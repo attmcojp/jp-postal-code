@@ -4,11 +4,11 @@ runners:
     addr: "${GRPC_SERVER_ADDRESS:-localhost:50051}"
     tls: false
 steps:
-- greq:
-    jp_postal_code.v1.PostalAddressService/SearchPostalAddress:
-      message:
-        postal_code: ""
-  test: |
-    current.res.status == 0 &&
-    len(current.res.message.items) > 0 &&
-    current.res.message.next_page_token != null
+  - greq:
+      jp_postal_code.v1.PostalAddressService/SearchPostalAddress:
+        message:
+          postal_code: ""
+    test: |
+      current.res.status == 0 &&
+      len(current.res.message.items) > 0 &&
+      current.res.message.next_page_token != null
