@@ -139,6 +139,9 @@ just check
 # テスト実行
 just test
 
+# gRPCのrunnテスト実行
+just test-grpc
+
 # コードフォーマット（Rust + protobuf）
 just fmt
 

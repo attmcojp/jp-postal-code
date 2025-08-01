@@ -1,0 +1,14 @@
+desc: 負のページサイズでの検索 - デフォルト動作の確認
+runners:
+  greq:
+    addr: "${GRPC_SERVER_ADDRESS:-localhost:50051}"
+    tls: false
+steps:
+  - greq:
+      jp_postal_code.v1.PostalAddressService/SearchPostalAddress:
+        message:
+          postal_code: "100"
+          page_size: -1
+    test: |
+      current.res.status == 0 &&
+      len(current.res.message.items) == 0

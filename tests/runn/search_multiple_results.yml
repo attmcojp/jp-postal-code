@@ -1,0 +1,37 @@
+desc: 郵便番号検索の複数結果例 - 部分一致で複数の住所を検索とページネーション
+runners:
+  greq:
+    addr: "${GRPC_SERVER_ADDRESS:-localhost:50051}"
+    tls: false
+steps:
+  - greq:
+      jp_postal_code.v1.PostalAddressService/SearchPostalAddress:
+        message:
+          postal_code: "100000"
+          page_size: 3
+    test: |
+      current.res.status == 0 &&
+      len(current.res.message.items) == 3 &&
+      current.res.message.items[0].address.postal_code == "1000000" &&
+      current.res.message.items[0].address.town == "" &&
+      current.res.message.items[1].address.postal_code == "1000001" &&
+      current.res.message.items[1].address.town == "千代田" &&
+      current.res.message.items[2].address.postal_code == "1000002" &&
+      current.res.message.items[2].address.town == "皇居外苑" &&
+      current.res.message.next_page_token != null
+  - greq:
+      jp_postal_code.v1.PostalAddressService/SearchPostalAddress:
+        message:
+          postal_code: "100000"
+          page_size: 3
+          page_token: "{{ steps[0].res.message.next_page_token }}"
+    test: |
+      current.res.status == 0 &&
+      len(current.res.message.items) == 3 &&
+      current.res.message.items[0].address.postal_code == "1000003" &&
+      current.res.message.items[0].address.town == "一ツ橋１丁目" &&
+      current.res.message.items[1].address.postal_code == "1000005" &&
+      current.res.message.items[1].address.town == "丸の内" &&
+      current.res.message.items[2].address.postal_code == "1000006" &&
+      current.res.message.items[2].address.town == "有楽町" &&
+      current.res.message.next_page_token == null

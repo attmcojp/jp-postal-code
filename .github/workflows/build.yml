@@ -30,3 +30,31 @@ jobs:
       - uses: actions-rust-lang/setup-rust-toolchain@v1
       - run: cargo build --locked --release
     timeout-minutes: 15
+
+  test-grpc:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and start services with Docker Compose
+        run: |
+          docker compose build
+          docker compose up -d
+          # Wait for services to be ready
+          for i in {1..30}; do
+            if curl -f http://localhost:8000/api/search?postal_code=100 > /dev/null 2>&1; then
+              echo "Services are ready"
+              break
+            fi
+            echo "Waiting for services to be ready... ($i/30)"
+            sleep 2
+          done
+      - uses: k2tzumi/runn-action@latest
+        with:
+          path_pattern: tests/runn/*.yml
+      - name: Show logs on failure
+        if: failure()
+        run: docker compose logs
+      - name: Stop services
+        if: always()
+        run: docker compose down
+    timeout-minutes: 15

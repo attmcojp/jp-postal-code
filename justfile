@@ -35,3 +35,7 @@ dev:
 # データベースマイグレーションを実行する
 migrate:
   cargo run --bin jp-postal-code-update-database
+
+# gRPCのrunnテストを実行する
+test-grpc:
+  runn run tests/runn/*.yml
