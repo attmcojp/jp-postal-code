@@ -53,6 +53,7 @@ jobs:
       - name: Start gRPC server
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/jp_postal_code
+          SQLX_OFFLINE: true
         run: |
           cargo build --release --bin jp-postal-code
           cargo run --release --bin jp-postal-code &
