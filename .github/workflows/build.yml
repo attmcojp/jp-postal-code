@@ -30,3 +30,34 @@ jobs:
       - uses: actions-rust-lang/setup-rust-toolchain@v1
       - run: cargo build --locked --release
     timeout-minutes: 15
+
+  test-grpc:
+    needs: ["build"]
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: jp_postal_code
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+      - uses: k1LoW/runn-action@v0
+      - name: Start gRPC server
+        env:
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/jp_postal_code
+        run: |
+          cargo build --release --bin jp-postal-code
+          cargo run --release --bin jp-postal-code &
+          sleep 10  # Wait for server to start and initialize database
+      - name: Run runn tests
+        run: runn run tests/runn/*.yml
+    timeout-minutes: 10
