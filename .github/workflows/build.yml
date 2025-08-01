@@ -50,7 +50,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions-rust-lang/setup-rust-toolchain@v1
-      - uses: k1LoW/runn-action@v0
+      - uses: k1LoW/runn-action@latest
       - name: Start gRPC server
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/jp_postal_code
