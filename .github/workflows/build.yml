@@ -32,33 +32,29 @@ jobs:
     timeout-minutes: 15
 
   test-grpc:
-    needs: ["build"]
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:16
-        env:
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: jp_postal_code
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
     steps:
       - uses: actions/checkout@v4
-      - uses: actions-rust-lang/setup-rust-toolchain@v1
-      - name: Start gRPC server
-        env:
-          DATABASE_URL: postgres://postgres:postgres@localhost:5432/jp_postal_code
-          SQLX_OFFLINE: true
+      - name: Build and start services with Docker Compose
         run: |
-          cargo build --release --bin jp-postal-code
-          cargo run --release --bin jp-postal-code &
-          sleep 10  # Wait for server to start and initialize database
+          docker compose build
+          docker compose up -d
+          # Wait for services to be ready
+          for i in {1..30}; do
+            if curl -f http://localhost:8000/api/search?postal_code=100 > /dev/null 2>&1; then
+              echo "Services are ready"
+              break
+            fi
+            echo "Waiting for services to be ready... ($i/30)"
+            sleep 2
+          done
       - uses: k2tzumi/runn-action@latest
         with:
           path_pattern: tests/runn/*.yml
-    timeout-minutes: 10
+      - name: Show logs on failure
+        if: failure()
+        run: docker compose logs
+      - name: Stop services
+        if: always()
+        run: docker compose down
+    timeout-minutes: 15
